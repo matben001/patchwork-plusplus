@@ -20,17 +20,18 @@ class config:
 
 
 def generate_launch_description():
+    #Params a definir lors de la command ros pour le launch.py
     use_sim_time = LaunchConfiguration("use_sim_time", default="true")
 
     # tf tree configuration, these are the likely 3 parameters to change and nothing else
-    base_frame = LaunchConfiguration("base_frame", default="base_link")
+    base_frame = LaunchConfiguration("base_frame", default="hesai_lidar") #base_frame
 
     # ROS configuration
-    pointcloud_topic = LaunchConfiguration("cloud_topic")
+    pointcloud_topic = LaunchConfiguration("cloud_topic", default="lidar_points")
     visualize = LaunchConfiguration("visualize", default="true")
 
     # Optional ros bag play
-    bagfile = LaunchConfiguration("bagfile", default="")
+    bagfile = LaunchConfiguration("bagfile", default="") #rosbag2_2024_07_09-19_57_44
 
     # Patchwork++ node
     patchworkpp_node = Node(
@@ -47,7 +48,7 @@ def generate_launch_description():
                 "base_frame": base_frame,
                 "use_sim_time": use_sim_time,
                 # Patchwork++ configuration
-                'sensor_height': 1.88,
+                'sensor_height': 0.70,
                 'num_iter': 3,  # Number of iterations for ground plane estimation using PCA.
                 'num_lpr': 20,  # Maximum number of points to be selected as lowest points representative.
                 'num_min_pts': 0,  # Minimum number of points to be estimated as ground plane in each patch.
@@ -77,7 +78,7 @@ def generate_launch_description():
     )
 
     bagfile_play = ExecuteProcess(
-        cmd=["ros2", "bag", "play", bagfile],
+        cmd=["ros2", "bag", "play", "-l", bagfile],
         output="screen",
         condition=IfCondition(PythonExpression(["'", bagfile, "' != ''"])),
     )
